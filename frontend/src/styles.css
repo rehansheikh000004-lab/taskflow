@@ -1,0 +1,15 @@
+:root{
+  --bg:#0b0b0f;
+  --card:#121217;
+  --gold:#d4af37;
+  --muted:#9ca3af;
+}
+body{margin:0;font-family:Poppins,system-ui;background:linear-gradient(180deg,#03030a,#0b0b0f);color:white}
+.container{max-width:980px;margin:40px auto;padding:20px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+button{background:var(--gold);border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+input,textarea,select{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #222;background:#0f1115;color:white}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.small{font-size:13px;color:var(--muted)}
+.completed{opacity:0.6;text-decoration:line-through}
