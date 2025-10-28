@@ -1,12 +1,19 @@
-import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
 
-export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api"
-});
+export async function signupUser(userData) {
+  const response = await fetch(`${API_URL}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  return response.json();
+}
 
-// attach token automatically if present
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+export async function loginUser(userData) {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  return response.json();
+}
