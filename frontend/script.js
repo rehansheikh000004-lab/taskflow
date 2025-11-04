@@ -1,4 +1,7 @@
-const API_BASE_URL = "https://taskflow-szvc.onrender.com"; // Render backend
+const API_BASE_URL = "https://taskflow-szvc.onrender.com"; // your backend
+
+document.getElementById("signupBtn").addEventListener("click", signup);
+document.getElementById("loginBtn").addEventListener("click", login);
 
 async function signup() {
   const username = document.getElementById("username").value;
