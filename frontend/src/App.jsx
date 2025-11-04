@@ -1,21 +1,18 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
+import React from "react";
+import Login from "./components/Login.jsx";
+import Signup from "./components/Signup.jsx";
 
 function App() {
+  const [showLogin, setShowLogin] = React.useState(true);
+
   return (
-    <BrowserRouter>
-      <nav>
-        <Link to="/login">Login</Link> | <Link to="/signup">Signup</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="app">
+      <h1>TaskFlow App</h1>
+      {showLogin ? <Login /> : <Signup />}
+      <button onClick={() => setShowLogin(!showLogin)}>
+        {showLogin ? "Create Account" : "Go to Login"}
+      </button>
+    </div>
   );
 }
 
