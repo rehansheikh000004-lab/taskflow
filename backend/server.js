@@ -7,41 +7,44 @@ import authRoutes from "./routes/auth.js";
 dotenv.config();
 
 const app = express();
-
-// ✅ FIXED CORS CONFIG
-const allowedOrigins = [
-  "https://taskflow-c5dprb5bk-rehansheikh000004-labs-projects.vercel.app", // your Vercel frontend
-  "https://taskflow-gamma-eight.vercel.app", // optional older one
-  "http://localhost:5173", // for local dev
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, curl)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = "CORS policy does not allow access from this origin.";
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  })
-);
-
 app.use(express.json());
+
+// Setup CORS using ALLOWED_ORIGINS env (comma separated)
+const rawOrigins = process.env.ALLOWED_ORIGINS || "";
+const allowedOrigins = rawOrigins.split(",").map(s => s.trim()).filter(Boolean);
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // allow requests with no origin like curl, mobile, or server-to-server
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.length === 0) return callback(null, true); // allow all if not set
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("CORS policy: origin not allowed"), false);
+  },
+  credentials: true
+}));
+
+// Routes
 app.use("/api/auth", authRoutes);
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+// root (useful to confirm service is up)
+app.get("/", (req, res) => res.send("✅ TaskFlow backend is running"));
 
-// Default route
-app.get("/", (req, res) => res.send("TaskFlow backend running ✅"));
-
-// Start server
+// Connect DB then start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+const MONGO_URL = process.env.MONGO_URL;
+
+if (!MONGO_URL) {
+  console.error("❌ MONGO_URI not set. Set it in environment variables.");
+  process.exit(1);
+}
+
+mongoose.connect(MONGO_URL)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
+  })
+  .catch(err => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
