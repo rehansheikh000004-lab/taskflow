@@ -1,31 +1,8 @@
-body {
-  font-family: "Poppins", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #111;
-  color: #fff;
-}
-
-.app {
-  background: #222;
-  padding: 30px;
-  border-radius: 12px;
-  text-align: center;
-}
-
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 80%;
-}
-
-button {
-  padding: 10px 20px;
-  background: gold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
+body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto; background:#0b0b0b; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+.app { width:360px; text-align:center; }
+.card { background:#121212; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+input { display:block; width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #222; background:#0b0b0b; color:#fff; }
+button { width:100%; padding:10px; background:#f5b400; border:none; color:#000; font-weight:600; border-radius:8px; cursor:pointer; }
+.toggle { color:#9ecbff; cursor:pointer; margin-top:12px; }
+.err { color:#ff6b6b; }
+.ok { color:#7fffd4; }
