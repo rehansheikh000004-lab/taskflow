@@ -1,34 +1,35 @@
 import React, { useState } from "react";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState("");
 
-  const handleLogin = async () => {
-    const res = await fetch("https://taskflow-szvc.onrender.com/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const data = await res.json();
-    alert(data.message);
-  };
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setMsg("Loading...");
+    try {
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      setMsg(data.message || "Unknown response");
+    } catch (err) {
+      setMsg("Network or server error");
+    }
+  }
 
   return (
-    <div>
+    <form className="card" onSubmit={handleSubmit}>
       <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
-    </div>
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
+      <input value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" type="password" required />
+      <button type="submit">Login</button>
+      <p className={msg && msg.includes("success") ? "ok" : "err"}>{msg}</p>
+    </form>
   );
 }
