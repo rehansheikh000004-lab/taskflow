@@ -3,46 +3,45 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
+import taskRoutes from "./routes/tasks.js";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// Setup CORS using ALLOWED_ORIGINS env (comma separated)
-const rawOrigins = process.env.ALLOWED_ORIGINS || "";
-const allowedOrigins = rawOrigins.split(",").map(s => s.trim()).filter(Boolean);
+// Setup CORS from ALLOWED_ORIGINS env (comma separated)
+const raw = process.env.ALLOWED_ORIGINS || "";
+const allowed = raw.split(",").map(s => s.trim()).filter(Boolean);
 
 app.use(cors({
-  origin: function(origin, callback) {
-    // allow requests with no origin like curl, mobile, or server-to-server
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.length === 0) return callback(null, true); // allow all if not set
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("CORS policy: origin not allowed"), false);
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // allow non-browser tools
+    if (allowed.length === 0) return cb(null, true);
+    if (allowed.includes(origin)) return cb(null, true);
+    cb(new Error("CORS not allowed"));
   },
   credentials: true
 }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
 
-// root (useful to confirm service is up)
-app.get("/", (req, res) => res.send("✅ TaskFlow backend is running"));
+// root
+app.get("/", (req, res) => res.send("✅ TaskFlow backend running"));
 
-// Connect DB then start server
+// MongoDB connect then start
 const PORT = process.env.PORT || 5000;
-const MONGO_URL = process.env.MONGO_URL;
-
-if (!MONGO_URL) {
-  console.error("❌ MONGO_URI not set. Set it in environment variables.");
+if (!process.env.MONGO_URL) {
+  console.error("❌ MONGO_URL missing in env");
   process.exit(1);
 }
 
-mongoose.connect(MONGO_URL)
+mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log("✅ MongoDB connected");
-    app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
   .catch(err => {
     console.error("❌ MongoDB connection error:", err);
