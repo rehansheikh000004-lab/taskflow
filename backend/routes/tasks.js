@@ -1,59 +1,73 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import Task from "../models/Task.js";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
-// middleware to protect routes
-const protect = (req, res, next) => {
-  const header = req.headers.authorization;
+const auth = (req, res, next) => {
+  const header = req.header("Authorization");
   if (!header) return res.status(401).json({ message: "No token" });
-
   const token = header.replace("Bearer ", "");
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
+    req.userId = decoded.id;
     next();
   } catch {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-// Create
-router.post("/", protect, async (req, res) => {
-  const { title, dueDate, priority, notes } = req.body;
-  if (!title) return res.status(400).json({ message: "Title required" });
-  const task = await Task.create({ user: req.userId, title, dueDate, priority, notes });
-  res.status(201).json(task);
+// GET /api/tasks - list user's tasks
+router.get("/", auth, async (req, res) => {
+  try {
+    const tasks = await Task.find({ userId: req.userId }).sort({ createdAt: -1 });
+    res.json(tasks);
+  } catch (err) {
+    console.error("Get tasks error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Read (all for user)
-router.get("/", protect, async (req, res) => {
-  const tasks = await Task.find({ user: req.userId }).sort({ createdAt: -1 });
-  res.json(tasks);
+// POST /api/tasks - create
+router.post("/", auth, async (req, res) => {
+  try {
+    const { title, description, dueDate } = req.body;
+    if (!title) return res.status(400).json({ message: "Title required" });
+    const task = await Task.create({ userId: req.userId, title: title.trim(), description: description || "", dueDate: dueDate || null });
+    res.status(201).json(task);
+  } catch (err) {
+    console.error("Create task error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Update
-router.put("/:id", protect, async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, user: req.userId });
-  if (!task) return res.status(404).json({ message: "Not found" });
-
-  const { title, completed, dueDate, priority, notes } = req.body;
-  if (title !== undefined) task.title = title;
-  if (completed !== undefined) task.completed = completed;
-  if (dueDate !== undefined) task.dueDate = dueDate;
-  if (priority !== undefined) task.priority = priority;
-  if (notes !== undefined) task.notes = notes;
-
-  await task.save();
-  res.json(task);
+// PUT /api/tasks/:id - update
+router.put("/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: "Invalid id" });
+    const updated = await Task.findOneAndUpdate({ _id: id, userId: req.userId }, req.body, { new: true });
+    if (!updated) return res.status(404).json({ message: "Task not found" });
+    res.json(updated);
+  } catch (err) {
+    console.error("Update task error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Delete
-router.delete("/:id", protect, async (req, res) => {
-  const task = await Task.findOneAndDelete({ _id: req.params.id, user: req.userId });
-  if (!task) return res.status(404).json({ message: "Not found" });
-  res.json({ message: "Deleted" });
+// DELETE /api/tasks/:id - delete
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: "Invalid id" });
+    const deleted = await Task.findOneAndDelete({ _id: id, userId: req.userId });
+    if (!deleted) return res.status(404).json({ message: "Task not found" });
+    res.json({ message: "Task deleted" });
+  } catch (err) {
+    console.error("Delete task error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 export default router;
