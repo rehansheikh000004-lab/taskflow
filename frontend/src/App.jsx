@@ -1,37 +1,45 @@
 import React, { useState } from "react";
-import Login from "./components/Login.jsx";
-import Signup from "./components/Signup.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import axios from "axios";
 
-export default function App() {
-  const [token, setToken] = useState(localStorage.getItem("tf_token") || null);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("tf_user")) || null);
+function App() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const [message, setMessage] = useState("");
 
-  const onLogin = (t, u) => {
-    localStorage.setItem("tf_token", t);
-    localStorage.setItem("tf_user", JSON.stringify(u));
-    setToken(t);
-    setUser(u);
+  const API_BASE = import.meta.env.VITE_API_URL;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const url = isLogin ? `${API_BASE}/login` : `${API_BASE}/register`;
+      const payload = isLogin ? { email, password } : { username, email, password };
+      const res = await axios.post(url, payload);
+      setMessage(res.data.msg || "Success!");
+    } catch (err) {
+      setMessage(err.response?.data?.msg || "Error occurred");
+    }
   };
 
-  const onLogout = () => {
-    localStorage.removeItem("tf_token");
-    localStorage.removeItem("tf_user");
-    setToken(null);
-    setUser(null);
-  };
-
-  if (!token) {
-    return (
-      <div className="app">
-        <h1>TaskFlow</h1>
-        <div className="authBox">
-          <Login onLogin={onLogin} />
-          <Signup />
-        </div>
-      </div>
-    );
-  }
-
-  return <Dashboard token={token} user={user} onLogout={onLogout} />;
+  return (
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h2>{isLogin ? "Login" : "Register"}</h2>
+      <form onSubmit={handleSubmit}>
+        {!isLogin && <input type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />}
+        <br />
+        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+        <br />
+        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <br />
+        <button type="submit">{isLogin ? "Login" : "Register"}</button>
+      </form>
+      <p>{message}</p>
+      <button onClick={() => setIsLogin(!isLogin)}>
+        Switch to {isLogin ? "Register" : "Login"}
+      </button>
+    </div>
+  );
 }
+
+export default App;
