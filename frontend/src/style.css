@@ -1,11 +1,34 @@
-body { font-family: Inter, system-ui, -apple-system; background:#0b0b0b; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;}
-.app { width:880px; display:flex; gap:20px; align-items:flex-start; flex-direction:column; }
-.authBox { display:flex; gap:20px; }
-.card { background:#121212; padding:20px; border-radius:12px; width:360px; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
-input { display:block; width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #222; background:#0b0b0b; color:#fff; }
-button { padding:8px 12px; background:#f5b400; color:black; border:none; border-radius:8px; cursor:pointer; margin:6px 0; }
-.toggle { color:#9ecbff; cursor:pointer; }
-.ok { color:#7fffd4; } .err { color:#ff6b6b; }
-.taskList { list-style:none; padding:0; margin-top:12px; }
-.taskList li { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:8px; border:1px solid #222; margin-bottom:8px; }
-.taskList li.completed { opacity:0.7; text-decoration:line-through; }
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f0f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 320px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 20px;
+  background: #4b6bfb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
