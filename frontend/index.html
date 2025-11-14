@@ -1,132 +1,71 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>TodoMaster</title>
-  <style>
-    body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
-    .task { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 5px; }
-    .done { text-decoration: line-through; color: gray; }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TodoMaster — Premium</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<h1>TodoMaster</h1>
-
-<h2>Create Account</h2>
-<input id="su-user" placeholder="Username"><br><br>
-<input id="su-pass" placeholder="Password" type="password"><br><br>
-<button onclick="signup()">Signup</button>
-
-<h2>Login</h2>
-<input id="li-user" placeholder="Username"><br><br>
-<input id="li-pass" placeholder="Password" type="password"><br><br>
-<button onclick="login()">Login</button>
-
-<hr>
-
-<h2>Add Task</h2>
-<input id="task-text" placeholder="Task">
-<button onclick="addTask()">Add</button>
-
-<h2>Your Tasks</h2>
-<div id="taskList"></div>
-
-<script>
-const API = "https://taskflow-szvc.onrender.com";
-
-// SIGNUP
-async function signup() {
-  const username = document.getElementById("su-user").value;
-  const password = document.getElementById("su-pass").value;
-
-  let res = await fetch(API + "/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-  });
-
-  alert((await res.json()).message);
-}
-
-// LOGIN
-async function login() {
-  const username = document.getElementById("li-user").value;
-  const password = document.getElementById("li-pass").value;
-
-  let res = await fetch(API + "/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-  });
-
-  res = await res.json();
-  if (res.token) {
-    localStorage.setItem("token", res.token);
-    loadTasks();
-  } else {
-    alert(res.message);
-  }
-}
-
-// ADD TASK
-async function addTask() {
-  const text = document.getElementById("task-text").value;
-  const token = localStorage.getItem("token");
-
-  await fetch(API + "/add-task", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, text })
-  });
-
-  loadTasks();
-}
-
-// LOAD TASKS
-async function loadTasks() {
-  const token = localStorage.getItem("token");
-
-  let res = await fetch(API + "/tasks", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token })
-  });
-
-  res = await res.json();
-
-  document.getElementById("taskList").innerHTML = res.tasks
-    .map(t => `
-      <div class="task ${t.completed ? "done" : ""}">
-        ${t.text}
-        <button onclick="complete('${t._id}')">✔</button>
-        <button onclick="removeTask('${t._id}')">🗑</button>
+  <main class="page">
+    <header class="brand">
+      <div class="logo">
+        <div class="planet"></div>
       </div>
-    `)
-    .join("");
-}
+      <h1>TodoMaster</h1>
+      <p class="subtitle">A premium minimal todo experience</p>
+    </header>
 
-// COMPLETE
-async function complete(taskId) {
-  const token = localStorage.getItem("token");
-  await fetch(API + "/complete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, taskId })
-  });
-  loadTasks();
-}
+    <section class="app-grid">
+      <aside class="auth-card glass">
+        <div class="tabs">
+          <button id="tab-login" class="tab active">Login</button>
+          <button id="tab-signup" class="tab">Sign up</button>
+        </div>
 
-// DELETE
-async function removeTask(taskId) {
-  const token = localStorage.getItem("token");
-  await fetch(API + "/delete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, taskId })
-  });
-  loadTasks();
-}
-</script>
+        <form id="auth-form" class="form">
+          <div id="field-username" class="field">
+            <label>Username</label>
+            <input id="username" name="username" autocomplete="username" required />
+          </div>
 
+          <div class="field">
+            <label>Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+
+          <button id="auth-btn" class="btn primary">Submit</button>
+
+          <p id="auth-msg" class="muted"></p>
+        </form>
+      </aside>
+
+      <section class="todo-panel glass">
+        <div class="todo-header">
+          <div>
+            <h2>Your Tasks</h2>
+            <p id="user-info" class="muted small"></p>
+          </div>
+          <div>
+            <button id="logout-btn" class="btn ghost">Logout</button>
+          </div>
+        </div>
+
+        <form id="add-form" class="add-form">
+          <input id="task-input" placeholder="Add a new task..." autocomplete="off" />
+          <button id="add-btn" class="btn gold">Add</button>
+        </form>
+
+        <div id="tasks" class="tasks"></div>
+        <p id="todo-msg" class="muted small"></p>
+      </section>
+    </section>
+
+    <footer class="footer">
+      <small>Designed with ✨ — TodoMaster</small>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
