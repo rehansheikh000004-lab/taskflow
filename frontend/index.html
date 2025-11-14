@@ -1,12 +1,132 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TaskFlow</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TodoMaster</title>
+  <style>
+    body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
+    .task { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 5px; }
+    .done { text-decoration: line-through; color: gray; }
+  </style>
+</head>
+<body>
+
+<h1>TodoMaster</h1>
+
+<h2>Create Account</h2>
+<input id="su-user" placeholder="Username"><br><br>
+<input id="su-pass" placeholder="Password" type="password"><br><br>
+<button onclick="signup()">Signup</button>
+
+<h2>Login</h2>
+<input id="li-user" placeholder="Username"><br><br>
+<input id="li-pass" placeholder="Password" type="password"><br><br>
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h2>Add Task</h2>
+<input id="task-text" placeholder="Task">
+<button onclick="addTask()">Add</button>
+
+<h2>Your Tasks</h2>
+<div id="taskList"></div>
+
+<script>
+const API = "https://your-backend.onrender.com";
+
+// SIGNUP
+async function signup() {
+  const username = document.getElementById("su-user").value;
+  const password = document.getElementById("su-pass").value;
+
+  let res = await fetch(API + "/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  alert((await res.json()).message);
+}
+
+// LOGIN
+async function login() {
+  const username = document.getElementById("li-user").value;
+  const password = document.getElementById("li-pass").value;
+
+  let res = await fetch(API + "/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  res = await res.json();
+  if (res.token) {
+    localStorage.setItem("token", res.token);
+    loadTasks();
+  } else {
+    alert(res.message);
+  }
+}
+
+// ADD TASK
+async function addTask() {
+  const text = document.getElementById("task-text").value;
+  const token = localStorage.getItem("token");
+
+  await fetch(API + "/add-task", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, text })
+  });
+
+  loadTasks();
+}
+
+// LOAD TASKS
+async function loadTasks() {
+  const token = localStorage.getItem("token");
+
+  let res = await fetch(API + "/tasks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token })
+  });
+
+  res = await res.json();
+
+  document.getElementById("taskList").innerHTML = res.tasks
+    .map(t => `
+      <div class="task ${t.completed ? "done" : ""}">
+        ${t.text}
+        <button onclick="complete('${t._id}')">✔</button>
+        <button onclick="removeTask('${t._id}')">🗑</button>
+      </div>
+    `)
+    .join("");
+}
+
+// COMPLETE
+async function complete(taskId) {
+  const token = localStorage.getItem("token");
+  await fetch(API + "/complete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, taskId })
+  });
+  loadTasks();
+}
+
+// DELETE
+async function removeTask(taskId) {
+  const token = localStorage.getItem("token");
+  await fetch(API + "/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, taskId })
+  });
+  loadTasks();
+}
+</script>
+
+</body>
 </html>
