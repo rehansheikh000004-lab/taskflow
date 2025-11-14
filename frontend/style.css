@@ -1,0 +1,133 @@
+/* Premium black & gold glassmorphism */
+:root{
+  --bg:#08070a;
+  --card:#0f1116dd;
+  --glass-border: rgba(255,255,255,0.06);
+  --gold: #f5b400;
+  --accent: #6c63ff;
+  --muted: #bfc7d3;
+  --glass-blur: 8px;
+  --radius: 14px;
+  --gap: 18px;
+  --shadow: 0 6px 30px rgba(2,6,23,0.6);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  background: radial-gradient(1200px 500px at 10% 10%, rgba(108,99,255,0.08), transparent 8%),
+              linear-gradient(180deg,#06060a 0%, #0b0b0d 100%);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+}
+
+/* Page container */
+.page{
+  width:100%;
+  max-width:1100px;
+  margin:auto;
+}
+
+/* Brand header */
+.brand{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  margin-bottom:18px;
+}
+.logo{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(145deg,#0b0b0d, #15151b);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 20px rgba(255,255,255,0.02), var(--shadow);
+  border:1px solid rgba(255,255,255,0.03);
+  position:relative;
+  overflow:hidden;
+}
+.planet{
+  width:30px;height:30px;border-radius:50%;
+  background: linear-gradient(145deg, var(--gold), #ffdd66);
+  box-shadow: 0 6px 20px rgba(245,180,0,0.14);
+  transform: translateX(-6px) translateY(-4px);
+}
+.brand h1{margin:0;font-size:20px;letter-spacing:0.4px}
+.brand .subtitle{margin:0;color:var(--muted);font-size:13px}
+
+/* layout */
+.app-grid{
+  display:grid;
+  grid-template-columns: 360px 1fr;
+  gap:var(--gap);
+  align-items:start;
+}
+
+/* glass card */
+.glass{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  padding:18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* auth card */
+.auth-card .tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{
+  flex:1;padding:10px;border-radius:10px;background:transparent;border:none;color:var(--muted);
+  cursor:pointer;font-weight:600;
+}
+.tab.active{background:linear-gradient(90deg, rgba(108,99,255,0.12), rgba(245,180,0,0.06));color:#fff}
+
+/* forms */
+.form .field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input{
+  width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;
+  outline:none;font-size:14px;
+}
+input::placeholder{color:#9aa0aa}
+.btn{
+  padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+  background:transparent;color:#fff;
+}
+.btn.primary{background:rgba(108,99,255,0.9);box-shadow:0 8px 18px rgba(108,99,255,0.12)}
+.btn.gold{background:var(--gold);color:#111}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+
+/* todo panel */
+.todo-panel{display:flex;flex-direction:column;gap:14px}
+.todo-header{display:flex;justify-content:space-between;align-items:center}
+.add-form{display:flex;gap:8px}
+.add-form input{flex:1}
+.tasks{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.task{
+  padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.15));
+  display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.03);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.task .left{display:flex;gap:12px;align-items:center}
+.task .title{font-weight:600}
+.task .muted{color:var(--muted);font-size:13px}
+.task:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(12,12,18,0.5)}
+.task.completed{opacity:0.7;text-decoration:line-through;color:#b8b8b8}
+
+/* small text */
+.muted{color:var(--muted)}
+.small{font-size:12px}
+
+/* footer */
+.footer{text-align:center;color:var(--muted);margin-top:18px}
+
+/* responsive */
+@media (max-width:880px){
+  .app-grid{grid-template-columns:1fr; padding-bottom:20px}
+  .brand{gap:12px}
+  .logo{width:44px;height:44px}
+  .planet{width:22px;height:22px}
+}
